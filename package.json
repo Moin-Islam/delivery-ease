@@ -54,6 +54,8 @@
     "swr": "^0.4.0",
     "use-async-effect": "^2.2.2",
     "use-async-memo": "^1.2.3",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "postcss": "8.4.31",
+    "postcss-scss": "4.0.6"
   }
 }
