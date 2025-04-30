@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "env-cmd -f .env.development.localpc next dev -p 3001",
+    "dev": "-f .env.development.localpc next dev -p 3001",
     "agarh": "env-cmd -f .env.agarh.production next start -p 3002",
     "demo": "env-cmd -f .env.demo.production next start -p 3003",
     "ftalal": "env-cmd -f .env.ftalal.production next start -p 3004",
@@ -17,7 +17,8 @@
     "deploy-ftatal": "pm2 stop 5 && git pull && rm -rf .next && env-cmd -f .env.ftalal.production npm run build-ftalal && pm2 start 5",
     "deploy-alinsaf": "pm2 stop 6 && git pull && git merge origin/development && rm -rf .next && env-cmd -f .env.alinsaf.production npm run build-alinsaf && pm2 start 6",
     "deploy-demo": "pm2 stop 7 && git pull && rm -rf .next && env-cmd -f .env.demo.production npm run build-demo && pm2 start 7",
-    "merge": "git pull && git merge origin/development"
+    "merge": "git pull && git merge origin/development",
+    "build": "next build"
   },
   "dependencies": {
     "@createnextapp/react-barcode": "^1.1.1",
