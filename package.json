@@ -67,8 +67,5 @@
     "use-async-effect": "^2.2.2",
     "use-async-memo": "^1.2.3",
     "xlsx": "^0.18.5"
-  },
-  "engines": {
-    "node": "20.x"
   }
 }
