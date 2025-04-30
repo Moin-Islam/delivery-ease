@@ -57,6 +57,7 @@
     "xlsx": "^0.16.9"
   },
   "devDependencies": {
+    "@netlify/plugin-nextjs": "^4.36.0",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.4.21",
     "postcss-preset-env": "^10.1.6",
