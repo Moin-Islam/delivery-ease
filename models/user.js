@@ -113,6 +113,7 @@ export const User = types
         { name: 'stock_manage_list' },
         { name: 'purchase_return_list' },
         { name: 'sale_return_list' },
+        { name: 'product_pos_sale_list' } //Create Sale permission
     
       ];
 

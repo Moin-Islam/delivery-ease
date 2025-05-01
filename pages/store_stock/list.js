@@ -16,15 +16,17 @@ import { useRootStore } from '../../models/root-store-provider';
 import { observer } from 'mobx-react-lite';
 import MaterialTable from 'material-table';
 import Typography from '@material-ui/core/Typography';
-import { Box, Grid, TextField} from '@material-ui/core';
+import { Box, Grid, TextField } from '@material-ui/core';
 import useSWR from 'swr';
 import { baseUrl } from '../../const/api';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import dummyData from '../../utils/dummyData'; // Import dummyData for store_current_stock_list
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
+
 const styles = {
   cardCategoryWhite: {
     '&,& a,& a:hover,& a:focus': {
@@ -61,18 +63,15 @@ const title = 'Store Stock';
 const subject = 'store_stock';
 const endpoint = {
   list: 'store_current_stock_list_pagination',
-  // create: 'store_stock_create',
-  // edit: 'store_stock_edit',
-  // delete: 'store_stock_delete',
 };
 
 const TableList = observer(() => {
   const classes = useStyles();
   const tableRef = React.createRef();
-  const handleRefress =()=>{
-    tableRef.current && tableRef.current.onQueryChange()
-  }
 
+  const handleRefress = () => {
+    tableRef.current && tableRef.current.onQueryChange();
+  };
 
   const { user } = useRootStore();
 
@@ -84,33 +83,21 @@ const TableList = observer(() => {
   const [wareHouseId, setWarehouseId] = useState(null);
 
   const [openWarning, setOpenWarning] = useState(false);
- 
+
   const handleCloseWarning = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
     setOpenWarning(false);
   };
-  const {warehouse_id, role} = user?.details || {}
+
+  const { warehouse_id, role } = user?.details || {};
 
   React.useEffect(() => {
-    if(warehouse_id && role=='warehouse admin'){
-  
-    setWarehouseId(warehouse_id)
-  }
-  
-  }, [])
-
-  // const fetcher = (url, auth) =>
-  //   axios
-  //     .get(url, {
-  //       headers: { Authorization: 'Bearer ' + auth },
-  //     })
-  //     .then((res) => res.data);
-
-  // const url = `${baseUrl}/store_list`;
-  // const { data, error, mutate } = useSWR([url, user.auth_token], fetcher);
-
+    if (warehouse_id && role === 'warehouse admin') {
+      setWarehouseId(warehouse_id);
+    }
+  }, []);
 
   useAsyncEffect(async (isMounted) => {
     const requestOne = axios.get(`${baseUrl}/store_list_active`, {
@@ -127,7 +114,6 @@ const TableList = observer(() => {
           const responseOneB = responses[0];
           const responseTwoU = responses[1];
 
-         
           setStoreList(responseOneB?.data?.response?.stores);
           setWarehouseList(responseTwoU?.data?.response?.warehouses);
           setLoad(true);
@@ -139,8 +125,6 @@ const TableList = observer(() => {
       });
   }, []);
 
-
-
   const columns = [
     {
       title: 'Name',
@@ -151,7 +135,6 @@ const TableList = observer(() => {
         </Typography>
       ),
     },
-
     { title: 'Current Stock', field: 'current_stock' },
     { title: 'Purchase Price', field: 'purchase_price' },
     {
@@ -160,39 +143,22 @@ const TableList = observer(() => {
       render: (rowData) => rowData.current_stock * rowData.purchase_price,
     },
     { title: 'Barcode', field: 'barcode' },
-    {
-      title: 'Store',
-      field: 'store_name',
-    },
+    { title: 'Store', field: 'store_name' },
   ];
 
-
-
   const handleStoreWiseSearch = (s) => {
-      if(s){
-        setStoreId(s.id)
-        // if(storeId && wareHouseId){
-          handleRefress()
-  
-        // }
-        
-      }
-             
-  }
+    if (s) {
+      setStoreId(s.id);
+      handleRefress();
+    }
+  };
 
   const handleWarehouseWiseSearch = (s) => {
-    if(s){
-      console.log(storeId,wareHouseId)
-      setWarehouseId(s.id)
-      // if(storeId && wareHouseId){
-        handleRefress()
-
-      // }
-     
-      
+    if (s) {
+      setWarehouseId(s.id);
+      handleRefress();
     }
-           
-}
+  };
 
   return (
     <Gurd subject={subject}>
@@ -204,7 +170,6 @@ const TableList = observer(() => {
                 <Grid container item xs={6} spacing={3} direction="column">
                   <Box p={2}>
                     <h4 className={classes.cardTitleWhite}>{title} List</h4>
-                    
                   </Box>
                 </Grid>
                 <Grid
@@ -214,149 +179,108 @@ const TableList = observer(() => {
                   spacing={3}
                   direction="row"
                   justify="flex-end"
-                  alignItems="center">
-          
-                </Grid>
+                  alignItems="center"
+                ></Grid>
               </Grid>
             </CardHeader>
 
-
             <Grid container spacing={3}>
-       
-        <Grid item xs={6}>
-        {
-              load && (
-                <Autocomplete
-                id="combo-box-demo"
-                onChange={(e, v) => handleStoreWiseSearch(v)}
-                options={storeList}
-                getOptionLabel={(option) => option.store_name}
-                 style={{padding:"20px"}}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select  Store"
-                    variant="outlined"
+              <Grid item xs={6}>
+                {load && (
+                  <Autocomplete
+                    id="combo-box-demo"
+                    onChange={(e, v) => handleStoreWiseSearch(v)}
+                    options={storeList}
+                    getOptionLabel={(option) => option.store_name}
+                    style={{ padding: '20px' }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select Store"
+                        variant="outlined"
+                      />
+                    )}
                   />
                 )}
-              />
-      
-              )
-            }
-        
-        </Grid>
-        <Grid item xs={6}>
-        {
-              load && (
-                <Autocomplete
-                id="combo-box-demo"
-                onChange={(e, v) => handleWarehouseWiseSearch(v)}
-                options={warehouseList}
-                disabled={warehouse_id && role=='warehouse admin' ? true : false}
-                getOptionLabel={(option) => option.name}
-                 style={{padding:"20px"}}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select  Warehouse"
-                    variant="outlined"
+              </Grid>
+              <Grid item xs={6}>
+                {load && (
+                  <Autocomplete
+                    id="combo-box-demo"
+                    onChange={(e, v) => handleWarehouseWiseSearch(v)}
+                    options={warehouseList}
+                    disabled={warehouse_id && role === 'warehouse admin'}
+                    getOptionLabel={(option) => option.name}
+                    style={{ padding: '20px' }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select Warehouse"
+                        variant="outlined"
+                      />
+                    )}
                   />
                 )}
-              />
-      
-              )
-            }
-          
-        </Grid>
-    
-      </Grid>
+              </Grid>
+            </Grid>
 
-        
-
-
-
-
-
-            
             <CardBody>
-    {
-      // storeId && wareHouseId  (
-        <MaterialTable
-        icons={tableIcons}
-        title="Store Stock List"
-        tableRef={tableRef}
-        columns={columns}
+              <MaterialTable
+                icons={tableIcons}
+                title="Store Stock List"
+                tableRef={tableRef}
+                columns={columns}
+                data={(query) =>
+                  new Promise((resolve, reject) => {
+                    const filteredData = dummyData.store_current_stock_list.filter(item => {
+                      if (query.search) {
+                        return (
+                          item.product_name.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.barcode.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.store_name.toLowerCase().includes(query.search.toLowerCase())
+                        );
+                      }
+                      return true;
+                    });
 
-        data={query =>
-          new Promise((resolve, reject) => {
-           
-            let url = `${baseUrl}/${endpoint.list}?`
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
 
-            let data = new FormData();
-            data.append( "store_id", JSON.stringify(storeId) );
-            data.append( "warehouse_id", JSON.stringify(wareHouseId) );
-            const requestOptions = {
-              method: 'POST',
-              
-              headers: { 
-                Authorization: 'Bearer ' + user.auth_token
-              },
-               body: data 
-          };
-            //searching
-            if (query.search) {
-              url += `search=${query.search}`
-            }
-          
-            url += `&page=${query.page + 1}`
-            fetch(url,requestOptions).then(resp => resp.json()).then(resp => {
-      
-              resolve({
-                data: resp?.response?.store_current_stock_list?.data,
-                page: resp?.response?.store_current_stock_list?.current_page - 1,
-                totalCount: resp?.response?.store_current_stock_list?.total,
-              });
-            })
-
-          })
-        }
-
-  
-
-
-   
-        actions={[
-          {
-            icon: RefreshIcon,
-            tooltip: 'Refresh Data',
-            isFreeAction: true,
-            onClick: () => handleRefress(),
-          }
-        ]}
-        options={{
-          actionsColumnIndex: -1,
-          pageSize: 12,
-          pageSizeOptions:[12],
-          padding: 'dense',
-        }}
-       
-      />
-
-      // )
-    }
-             
-
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
+                  })
+                }
+                actions={[
+                  {
+                    icon: RefreshIcon,
+                    tooltip: 'Refresh Data',
+                    isFreeAction: true,
+                    onClick: () => handleRefress(),
+                  },
+                ]}
+                options={{
+                  actionsColumnIndex: -1,
+                  pageSize: 12,
+                  pageSizeOptions: [12],
+                  padding: 'dense',
+                }}
+              />
             </CardBody>
           </Card>
-         
         </GridItem>
       </GridContainer>
       <Snackbar
         open={openWarning}
         autoHideDuration={2000}
-        onClose={handleCloseWarning}>
+        onClose={handleCloseWarning}
+      >
         <Alert onClose={handleCloseWarning} severity="warning">
-          You dont't have permission!
+          You don't have permission!
         </Alert>
       </Snackbar>
     </Gurd>
@@ -364,4 +288,3 @@ const TableList = observer(() => {
 });
 
 export default TableList;
- 

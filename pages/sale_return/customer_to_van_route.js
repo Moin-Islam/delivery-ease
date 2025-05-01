@@ -1,9 +1,7 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import cogoToast from 'cogo-toast';
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -20,12 +18,12 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
-import { Box, Chip, Grid } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import { baseUrl } from "../../const/api";
-import MuiAlert from "@material-ui/lab/Alert";
 import ReturnComponent from "../../components/admin/sale_return/customer_to_van_route/index";
 import tableIcons from "components/table_icon/icon";
 import { convertFristCharcapital } from "../../helper/getMonthToNumber";
+import dummyData from "../../utils/dummyData"; // Import dummyData for sale_return_customer_to_van_route
 
 const styles = {
   cardCategoryWhite: {
@@ -75,18 +73,14 @@ const TableList = observer(() => {
   const [editData, setEditData] = useState(null);
   const [openEditModal, setOpenEditModal] = useState(false);
   const tableRef = React.createRef();
+
   const handleRefress = () => {
     tableRef.current && tableRef.current.onQueryChange();
   };
 
-
-
-
   const handleCloseEdit = () => {
     setOpenEditModal(false);
   };
-
-
 
   const columns = [
     {
@@ -95,22 +89,13 @@ const TableList = observer(() => {
     },
   ];
 
-
   const handleEdit = (row) => {
-    // if (!user.can("edit", subject)) {
-    //   cogoToast.error("You dont't have permission!",{position: 'top-right', bar:{size: '10px'}}); 
-    //   return null;
-    // }
     setEditData(row);
     setOpenEditModal(true);
   };
 
-
-
   return (
-
-   <Gurd subject={subject}>
-
+    <Gurd subject={subject}>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
           <Card>
@@ -118,13 +103,9 @@ const TableList = observer(() => {
               <Grid container spacing={1}>
                 <Grid container item xs={6} spacing={3} direction="column">
                   <Box p={2}>
-                    <h4 className={classes.cardTitleWhite}>
-                      Sale Invoice List
-                    </h4>
-                   
+                    <h4 className={classes.cardTitleWhite}>Sale Invoice List</h4>
                   </Box>
                 </Grid>
-
               </Grid>
             </CardHeader>
             <CardBody>
@@ -133,35 +114,28 @@ const TableList = observer(() => {
                 title="List"
                 tableRef={tableRef}
                 columns={columns}
-
-                data={query =>
+                data={(query) =>
                   new Promise((resolve, reject) => {
-                   
-                    let url = `${baseUrl}/${endpoint.list}?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`
-                    }
-                  
-                    url += `&page=${query.page + 1}`
-                    fetch(url,{
-                          method: "post",
-                          headers: { Authorization: "Bearer " + user.auth_token },
-                        }
-                      ).then(resp => resp.json()).then(resp => {
-                   
-                      resolve({
-                        data: resp?.data,
-                        page:  resp?.meta?.current_page - 1,
-                        totalCount: resp?.meta?.total,
-                      });
-                    })
-        
+                    const filteredData = dummyData.sale_return_customer_to_van_route.filter(item => {
+                      if (query.search) {
+                        return item.invoice_no.toLowerCase().includes(query.search.toLowerCase());
+                      }
+                      return true;
+                    });
+
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
-
                 actions={[
-      
                   {
                     icon: () => (
                       <Button
@@ -186,11 +160,9 @@ const TableList = observer(() => {
                   actionsColumnIndex: -1,
                   search: true,
                   pageSize: 12,
-                  pageSizeOptions:[12],
-
+                  pageSizeOptions: [12],
                   padding: "dense",
                 }}
-
               />
             </CardBody>
           </Card>
@@ -225,12 +197,9 @@ const TableList = observer(() => {
               mutate={handleRefress}
             />
           </Dialog>
-
         </GridItem>
       </GridContainer>
-
-      </Gurd>
-
+    </Gurd>
   );
 });
 

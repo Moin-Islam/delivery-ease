@@ -1,6 +1,5 @@
-import React from "react";
-import { useState,useEffect } from "react";
-import cogoToast from 'cogo-toast';
+import React, { useState, useEffect } from "react";
+import cogoToast from "cogo-toast";
 import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -23,14 +22,14 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
-import { Box, Chip, Grid } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import { baseUrl } from "../../const/api";
-import MuiAlert from "@material-ui/lab/Alert";
 import { useReactToPrint } from "react-to-print";
 import tableIcons from "components/table_icon/icon";
 import Details from "../../components/admin/product_whole_purchase/details";
 import { convertFristCharcapital } from "../../helper/getMonthToNumber";
 import PurchaseReturnInvoice from "components/admin/product_whole_purchase/PurchaseInvoice";
+import dummyData from '../../utils/dummyData'; // Import dummyData for purchase_return_list
 
 const styles = {
   cardCategoryWhite: {
@@ -86,22 +85,15 @@ const PerchaseReturn = observer(() => {
 
   const handleRefress = () => {
     tableRef.current && tableRef.current.onQueryChange();
-
   };
-
-
-
 
   const columns = [
     {
       title: "Invoice No",
-      // field: "total_amount",
       render: (rowData) => convertFristCharcapital(rowData.invoice_no),
     },
   ];
 
-
-  // handle details function
   const handleDetailsOpen = (row) => {
     setEditData(row);
     setOpenDetailModal(true);
@@ -111,8 +103,6 @@ const PerchaseReturn = observer(() => {
     setOpenDetailModal(false);
   };
 
-
-  // handle print function
   const handlePrint = async (row) => {
     await axios
       .post(
@@ -126,41 +116,31 @@ const PerchaseReturn = observer(() => {
       )
       .then((res) => {
         setInvoiceproduct(res.data.response);
-        setInvoicedata(row)
+        setInvoicedata(row);
       });
-
   };
-
-
-  // handle print
 
   const handlePrintInvoice = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: invoiceData?.invoice_no
-    // pageStyle:()=> {pageStyle}
+    documentTitle: invoiceData?.invoice_no,
   });
 
-
-  useEffect(()=>{
-    if(invoiceData){
+  useEffect(() => {
+    if (invoiceData) {
       handlePrintInvoice();
     }
-    },[invoiceData])
-
-
+  }, [invoiceData]);
 
   return (
     <Gurd subject={subject}>
-
-<div style={{ display: "none" }}>
+      <div style={{ display: "none" }}>
         <PurchaseReturnInvoice
           ref={componentRef}
           inv={invoiceData}
           invoiceProduct={invoiceProduct}
-          invoiceTitle='Purchase Return Invoice'
+          invoiceTitle="Purchase Return Invoice"
         />
       </div>
-
 
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
@@ -169,13 +149,9 @@ const PerchaseReturn = observer(() => {
               <Grid container spacing={1}>
                 <Grid container item xs={6} spacing={3} direction="column">
                   <Box p={2}>
-                    <h4 className={classes.cardTitleWhite}>
-                      Purchase Return List
-                    </h4>
-                   
+                    <h4 className={classes.cardTitleWhite}>Purchase Return List</h4>
                   </Box>
                 </Grid>
-
               </Grid>
             </CardHeader>
             <CardBody>
@@ -184,33 +160,31 @@ const PerchaseReturn = observer(() => {
                 title="List"
                 tableRef={tableRef}
                 columns={columns}
-
-                data={query =>
+                data={(query) =>
                   new Promise((resolve, reject) => {
-                   
-                    let url = `${baseUrl}/${endpoint.list}?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`
-                    }
-                  
-                    url += `&page=${query.page + 1}`
-                    fetch(url,{
-                          method: "post",
-                          headers: { Authorization: "Bearer " + user.auth_token },
+                    const filteredData = dummyData.purchase_return_list.filter(
+                      (item) => {
+                        if (query.search) {
+                          return item.invoice_no
+                            .toLowerCase()
+                            .includes(query.search.toLowerCase());
                         }
-                      ).then(resp => resp.json()).then(resp => {
-                   console.log(resp);
-                      resolve({
-                        data: resp?.data,
-                        page: resp?.meta?.current_page - 1,
-                        totalCount: resp?.meta?.total,
-                      });
-                    })
-        
+                        return true;
+                      }
+                    );
+
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
-
                 actions={[
                   {
                     icon: () => (
@@ -225,7 +199,6 @@ const PerchaseReturn = observer(() => {
                     tooltip: "Print",
                     onClick: (event, rowData) => handlePrint(rowData),
                   },
-
                   {
                     icon: () => (
                       <Button
@@ -239,7 +212,6 @@ const PerchaseReturn = observer(() => {
                     tooltip: "Show Products",
                     onClick: (event, rowData) => handleDetailsOpen(rowData),
                   },
-    
                   {
                     icon: RefreshIcon,
                     tooltip: "Refresh Data",
@@ -251,16 +223,13 @@ const PerchaseReturn = observer(() => {
                   actionsColumnIndex: -1,
                   search: true,
                   pageSize: 12,
-                  pageSizeOptions:[12],
-
+                  pageSizeOptions: [12],
                   padding: "dense",
                 }}
-
               />
             </CardBody>
           </Card>
 
-  
           <Dialog
             open={openDetailModal}
             onClose={handleCloseDetailsClose}
@@ -289,7 +258,6 @@ const PerchaseReturn = observer(() => {
           </Dialog>
         </GridItem>
       </GridContainer>
-
     </Gurd>
   );
 });

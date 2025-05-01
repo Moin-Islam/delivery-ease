@@ -1,9 +1,8 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import cogoToast from 'cogo-toast';
+import cogoToast from "cogo-toast";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -22,21 +21,17 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { Box, Chip, Grid } from "@material-ui/core";
 import { baseUrl } from "../../const/api";
-// import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import ProductDetails from "../../components/admin/sale_return/van_route_to_warehouse/van_route_to_return_details";
 import tableIcons from "components/table_icon/icon";
-// import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
-// import ReturnList from "components/admin/purchase_return/ReturnList";
 import { convertFristCharcapital } from "../../helper/getMonthToNumber";
-
-
-
+import dummyData from "../../utils/dummyData";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
+
 const styles = {
   cardCategoryWhite: {
     "&,& a,& a:hover,& a:focus": {
@@ -85,18 +80,14 @@ const VanReturnList = observer(() => {
   const [editData, setEditData] = useState(null);
   const [openDetailModal, setOpenDetailModal] = useState(false);
   const tableRef = React.createRef();
+
   const handleRefress = () => {
     tableRef.current && tableRef.current.onQueryChange();
   };
 
-
-
-
   const handleCloseDetail = () => {
     setOpenDetailModal(false);
   };
-
-
 
   const columns = [
     {
@@ -105,19 +96,17 @@ const VanReturnList = observer(() => {
     },
   ];
 
-
-
-
   const handleDetail = (row) => {
-    setEditData({...row,  user_name: row.sales_man_user_name, sale_date: row.product_sale_return_date});
+    setEditData({
+      ...row,
+      user_name: row.sales_man_user_name,
+      sale_date: row.product_sale_return_date,
+    });
     setOpenDetailModal(true);
   };
 
   return (
-
-   <Gurd subject={subject}>
-  
-
+    <Gurd subject={subject}>
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
           <Card>
@@ -128,10 +117,8 @@ const VanReturnList = observer(() => {
                     <h4 className={classes.cardTitleWhite}>
                       Sale Return Invoice List
                     </h4>
-                   
                   </Box>
                 </Grid>
-
               </Grid>
             </CardHeader>
             <CardBody>
@@ -140,33 +127,29 @@ const VanReturnList = observer(() => {
                 title="List"
                 tableRef={tableRef}
                 columns={columns}
-
-                data={query =>
+                data={(query) =>
                   new Promise((resolve, reject) => {
-                   
-                    let url = `${baseUrl}/${endpoint.list}?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`
-                    }
-                  
-                    url += `&page=${query.page + 1}`
-                    fetch(url,{
-                          method: "GET",
-                          headers: { Authorization: "Bearer " + user.auth_token },
-                        }
-                      ).then(resp => resp.json()).then(resp => {
-                   
-                      resolve({
-                        data: resp?.data,
-                        page:  resp?.meta?.current_page - 1,
-                        totalCount: resp?.meta?.total,
-                      });
-                    })
-        
+                    const filteredData = dummyData.van_route_to_warehouse.filter((item) => {
+                      if (query.search) {
+                        return item.invoice_no.includes(query.search);
+                      }
+                      return true;
+                    });
+
+                    const page = query.page;
+                    const pageSize = query.pageSize;
+                    const paginatedData = filteredData.slice(
+                      page * pageSize,
+                      (page + 1) * pageSize
+                    );
+
+                    resolve({
+                      data: paginatedData,
+                      page: page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
-
                 actions={[
                   {
                     icon: () => (
@@ -181,7 +164,6 @@ const VanReturnList = observer(() => {
                     tooltip: "Show Products",
                     onClick: (event, rowData) => handleDetail(rowData),
                   },
-
                   {
                     icon: RefreshIcon,
                     tooltip: "Refresh Data",
@@ -193,17 +175,14 @@ const VanReturnList = observer(() => {
                   actionsColumnIndex: -1,
                   search: true,
                   pageSize: 12,
-                  pageSizeOptions:[12],
-
+                  pageSizeOptions: [12],
                   padding: "dense",
                 }}
-
               />
             </CardBody>
           </Card>
 
-
-             <Dialog
+          <Dialog
             open={openDetailModal}
             onClose={handleCloseDetail}
             TransitionComponent={Transition}
@@ -227,19 +206,12 @@ const VanReturnList = observer(() => {
             </AppBar>
             <ProductDetails
               token={user.auth_token}
-            //   modal={setOpenDetailModal}
               editData={editData}
             />
           </Dialog>
-
-      
- 
- 
         </GridItem>
       </GridContainer>
-
-      </Gurd>
-
+    </Gurd>
   );
 });
 

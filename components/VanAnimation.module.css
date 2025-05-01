@@ -29,6 +29,32 @@
   justify-content: center;
 }
 
+.road {
+  position: absolute;
+  width: 120px;
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    #000,
+    #000 10px,
+    #fff 10px,
+    #fff 20px
+  );
+  z-index: 1;
+}
+
+.road.top {
+  top: calc(50% - 15px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.road.bottom {
+  top: calc(50% + 15px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .van {
   width: 100px;
   height: 50px;
@@ -36,6 +62,18 @@
   background-size: contain;
   animation: moveVan 2s linear;
   position: relative;
+  z-index: 3;
+  background-color: #f0f0f0;
+}
+
+.store{
+  width: 100px;
+  height: 50px;
+  background: url('/img/store.png') no-repeat center center;
+  background-size: contain;
+  position: absolute;
+  top: calc(50% - 50px);
+  left: calc(50% + 100px);
 }
 
 .smoke {

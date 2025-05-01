@@ -40,6 +40,8 @@ import PosSaleInvoicePrint  from "components/admin/product_pos_sale/Invoice_pos_
 import useStatePromise from "hooks/use-state-promise";
 import PrintTwoToneIcon from "@material-ui/icons/PrintTwoTone";
 import { convertFristCharcapital } from "../../helper/getMonthToNumber";
+import dummyData from '../../utils/dummyData'; // Import dummyData for product_sale_list
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -277,30 +279,32 @@ const TableList = observer(() => {
                 tableRef={tableRef}
                 columns={columns}
 
-                data={query =>
+                data={(query) =>
                   new Promise((resolve, reject) => {
-                   
-                    let url = `${baseUrl}/product_pos_sale_list_pagination_with_search?`
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`
-                    }
-                  
-                    url += `&page=${query.page + 1}`
-                    fetch(url,{
-                          method: "POST",
-                          headers: { Authorization: "Bearer " + user.auth_token },
-                        }
-                      ).then(resp => resp.json()).then(resp => {
-         
-                        
-                      resolve({
-                            data: resp?.data,
-                            page:  resp?.meta?.current_page - 1,
-                            totalCount: resp?.meta?.total,
-                      });
-                    })
-        
+                    const filteredData = dummyData.product_sale_list.filter(item => {
+                      if (query.search) {
+                        return (
+                          item.sale_date_time.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.invoice_no.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.store_name.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.customer_code.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.customer_name.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.vat_number.toLowerCase().includes(query.search.toLowerCase())
+                        );
+                      }
+                      return true;
+                    });
+
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
 

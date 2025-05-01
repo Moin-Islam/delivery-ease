@@ -1,9 +1,8 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import cogoToast from 'cogo-toast';
+import cogoToast from "cogo-toast";
 import Card from "components/Card/Card.js";
 import axios from "axios";
 import { useReactToPrint } from "react-to-print";
@@ -22,18 +21,15 @@ import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
-import { Box, Chip, Grid } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import { baseUrl } from "../../const/api";
-// import Snackbar from "@material-ui/core/Snack
-import useStatePromise from "hooks/use-state-promise";
 import PrintTwoToneIcon from "@material-ui/icons/PrintTwoTone";
-import MuiAlert from "@material-ui/lab/Alert";
 import ProductDetails from "../../components/admin/sale_return/customer_to_van_route/customer_return_details";
 import tableIcons from "components/table_icon/icon";
-// import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
 import { convertFristCharcapital } from "../../helper/getMonthToNumber";
-import SalesReturnPrint from '../../components/admin/sale_return/customer_to_van_route/utils/salesReturnInvoicePrint';
+import SalesReturnPrint from "../../components/admin/sale_return/customer_to_van_route/utils/salesReturnInvoicePrint";
+import dummyData from "../../utils/dummyData"; // Import dummyData for customer_return_list
 
 const styles = {
   cardCategoryWhite: {
@@ -82,25 +78,19 @@ const CustomerReturnList = observer(() => {
   const { user } = useRootStore();
   const [editData, setEditData] = useState(null);
   const [openDetailModal, setOpenDetailModal] = useState(false);
-  const [invoiceData,setInvoiceData] = useState(null);
-  const [invoiceProduct, setInvoiceproduct] = useState(null);
+  const [invoiceData, setInvoiceData] = useState(null);
+  const [invoiceProduct, setInvoiceProduct] = useState(null);
   const [businessDetails, setBusinessDetails] = useState(null);
+  const tableRef = useRef();
+  const componentRef = useRef(null);
 
-
-  
-  const tableRef = React.createRef();
   const handleRefress = () => {
     tableRef.current && tableRef.current.onQueryChange();
   };
 
-
-
-
   const handleCloseDetail = () => {
     setOpenDetailModal(false);
   };
-
-
 
   const columns = [
     {
@@ -109,18 +99,15 @@ const CustomerReturnList = observer(() => {
     },
   ];
 
-
-
-
   const handleDetail = (row) => {
-    setEditData({...row, user_name: row.sales_man_user_name, sale_date: row.product_sale_return_date});
+    setEditData({
+      ...row,
+      user_name: row.sales_man_user_name,
+      sale_date: row.product_sale_return_date,
+    });
     setOpenDetailModal(true);
   };
 
-
-
-
-  const componentRef = React.useRef(null);
   const handlePrint = async (row) => {
     await axios
       .post(
@@ -133,43 +120,34 @@ const CustomerReturnList = observer(() => {
         }
       )
       .then((res) => {
-    
-        setInvoiceproduct(res.data.data.product_sale_return_details);
+        setInvoiceProduct(res.data.data.product_sale_return_details);
         setBusinessDetails(res.data?.data.business_settings);
-        setInvoiceData(row)
-
+        setInvoiceData(row);
       });
-
   };
 
   const handlePrintInvoice = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: invoiceData?.invoice_no
+    documentTitle: invoiceData?.invoice_no,
   });
-  React.useEffect(()=>{
-    if(invoiceData){
+
+  useEffect(() => {
+    if (invoiceData) {
       handlePrintInvoice();
     }
-    },[invoiceData])
-  
+  }, [invoiceData]);
 
   return (
-
     <Gurd subject={subject}>
-
-
-<div style={{ display: "none" }}>
-        <SalesReturnPrint 
+      <div style={{ display: "none" }}>
+        <SalesReturnPrint
           ref={componentRef}
           inv={invoiceData}
           invoiceProduct={invoiceProduct}
-          // selesmanName={user?.details?.name}
           buniessDetails={businessDetails}
         />
       </div>
 
-  
-    
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
           <Card>
@@ -177,13 +155,9 @@ const CustomerReturnList = observer(() => {
               <Grid container spacing={1}>
                 <Grid container item xs={6} spacing={3} direction="column">
                   <Box p={2}>
-                    <h4 className={classes.cardTitleWhite}>
-                      Sale Return Invoice List
-                    </h4>
-                   
+                    <h4 className={classes.cardTitleWhite}>Sale Return Invoice List</h4>
                   </Box>
                 </Grid>
-
               </Grid>
             </CardHeader>
             <CardBody>
@@ -192,62 +166,46 @@ const CustomerReturnList = observer(() => {
                 title="List"
                 tableRef={tableRef}
                 columns={columns}
-
-                data={query =>
+                data={(query) =>
                   new Promise((resolve, reject) => {
-                   
-                    let url = `${baseUrl}/${endpoint.list}?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`
-                    }
-                  
-                    url += `&page=${query.page + 1}`
-                    fetch(url,{
-                          method: "GET",
-                          headers: { Authorization: "Bearer " + user.auth_token },
-                        }
-                      ).then(resp => resp.json()).then(resp => {
-                   
-                      resolve({
-                        data: resp?.data,
-                        page:  resp?.meta?.current_page - 1,
-                        totalCount: resp?.meta?.total,
-                      });
-                    })
-        
+                    const filteredData = dummyData.customer_return_list.filter(item => {
+                      if (query.search) {
+                        return item.invoice_no.toLowerCase().includes(query.search.toLowerCase());
+                      }
+                      return true;
+                    });
+
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
-
                 actions={[
                   {
                     icon: () => (
-                      <Button
-                        fullWidth={true}
-                        variant="contained"
-                        color="primary"
-                      >
+                      <Button fullWidth={true} variant="contained" color="primary">
                         <ListAltTwoToneIcon fontSize="small" color="white" />
                       </Button>
                     ),
                     tooltip: "Show Products",
                     onClick: (event, rowData) => handleDetail(rowData),
                   },
-
                   {
                     icon: () => (
-                      <Button
-                        fullWidth={true}
-                        variant="contained"
-                        color="primary"
-                      >
+                      <Button fullWidth={true} variant="contained" color="primary">
                         <PrintTwoToneIcon fontSize="small" color="white" />
                       </Button>
                     ),
                     tooltip: "Print",
                     onClick: (event, rowData) => handlePrint(rowData, false),
                   },
-
                   {
                     icon: RefreshIcon,
                     tooltip: "Refresh Data",
@@ -259,17 +217,14 @@ const CustomerReturnList = observer(() => {
                   actionsColumnIndex: -1,
                   search: true,
                   pageSize: 12,
-                  pageSizeOptions:[12],
-
+                  pageSizeOptions: [12],
                   padding: "dense",
                 }}
-
               />
             </CardBody>
           </Card>
 
-
-             <Dialog
+          <Dialog
             open={openDetailModal}
             onClose={handleCloseDetail}
             TransitionComponent={Transition}
@@ -291,21 +246,11 @@ const CustomerReturnList = observer(() => {
                 </Typography>
               </Toolbar>
             </AppBar>
-            <ProductDetails
-              token={user.auth_token}
-            //   modal={setOpenDetailModal}
-              editData={editData}
-            />
+            <ProductDetails token={user.auth_token} editData={editData} />
           </Dialog>
-
-      
- 
- 
         </GridItem>
       </GridContainer>
-
-      </Gurd>
-
+    </Gurd>
   );
 });
 

@@ -11,7 +11,6 @@ import CardBody from "components/Card/CardBody.js";
 import Gurd from "../../components/guard/Gurd";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
 import PrintTwoToneIcon from "@material-ui/icons/PrintTwoTone";
-// import axios from "axios";
 import { useRootStore } from "../../models/root-store-provider";
 import { observer } from "mobx-react-lite";
 import MaterialTable from "material-table";
@@ -31,6 +30,7 @@ import tableIcons from "components/table_icon/icon";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import { convertFristCharcapital } from "../././../helper/getMonthToNumber";
 import Details from "../../components/admin/product_whole_purchase/details";
+import dummyData from '../../utils/dummyData'; // Import dummyData for purchase_list
 
 const styles = {
   cardCategoryWhite: {
@@ -92,7 +92,6 @@ const PurchaseList = observer(() => {
   const columns = [
     {
       title: "Invoice No",
-      // field: "total_amount",
       render: (rowData) => convertFristCharcapital(rowData.invoice_no),
     },
   ];
@@ -110,7 +109,6 @@ const PurchaseList = observer(() => {
     setOpenEditModal(true);
   };
 
-  // handle details function
   const handleDetailsOpen = (row) => {
     setEditData(row);
     setOpenDetailModal(true);
@@ -144,26 +142,26 @@ const PurchaseList = observer(() => {
                 columns={columns}
                 data={(query) =>
                   new Promise((resolve, reject) => {
-                    let url = `${baseUrl}/${endpoint.list}?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`;
-                    }
+                    const filteredData = dummyData.purchase_list.filter(item => {
+                      if (query.search) {
+                        return (
+                          item.invoice_no.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.supplier_name.toLowerCase().includes(query.search.toLowerCase())
+                        );
+                      }
+                      return true;
+                    });
 
-                    url += `&page=${query.page + 1}`;
-                    fetch(url, {
-                      method: "post",
-                      headers: { Authorization: "Bearer " + user.auth_token },
-                    })
-                      .then((resp) => resp.json())
-                      .then((resp) => {
-                        console.log(resp?.data);
-                        resolve({
-                          data: resp?.data,
-                          page: resp?.current_page - 1,
-                          totalCount: resp?.total,
-                        });
-                      });
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
                 actions={[
@@ -205,7 +203,6 @@ const PurchaseList = observer(() => {
                   search: true,
                   pageSize: 12,
                   pageSizeOptions: [12],
-
                   padding: "dense",
                 }}
               />

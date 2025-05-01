@@ -14,7 +14,7 @@ import { LayoutCustomer } from "components/LayoutCustomer";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: "#0e4194",
+      main: "#262220",
     },
     // secondary: {
     //   main: "#313131",
