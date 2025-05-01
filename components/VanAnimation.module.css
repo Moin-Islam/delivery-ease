@@ -1,0 +1,58 @@
+@keyframes moveVan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes smokeTrail {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50px) scale(1.5);
+  }
+}
+
+.animationContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.van {
+  width: 100px;
+  height: 50px;
+  background: url('/img/van.png') no-repeat center center;
+  background-size: contain;
+  animation: moveVan 2s linear;
+  position: relative;
+}
+
+.smoke {
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+  width: 20px;
+  height: 20px;
+  background: rgba(128, 128, 128, 0.7);
+  border-radius: 50%;
+  animation: smokeTrail 1s ease-out infinite;
+}
+
+.smoke:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.smoke:nth-child(3) {
+  animation-delay: 0.4s;
+}

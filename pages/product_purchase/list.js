@@ -23,7 +23,6 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { Box, Chip, Grid } from "@material-ui/core";
 import { baseUrl } from "../../const/api";
-import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Create from "../../components/admin/product_whole_purchase/create";
 import Details from "../../components/admin/product_whole_purchase/details";
@@ -33,6 +32,7 @@ import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
 import PurchaseInvoice from "components/admin/product_whole_purchase/PurchaseInvoice";
 import PrintTwoToneIcon from "@material-ui/icons/PrintTwoTone";
 import { convertFristCharcapital } from "helper/getMonthToNumber";
+import dummyData from '../../utils/dummyData'; // Import dummyData for product_purchase_list
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -96,15 +96,12 @@ const TableList = observer(() => {
   const [invoiceData, setInvoicedata] = useState(null);
   const [invoiceProduct, setInvoiceproduct] = useState(null);
 
-
-
   const handleClickOpenCreate = () => {
     setOpenCreateModal(true);
   };
   const handleCloseCreate = () => {
     setOpenCreateModal(false);
   };
-
 
   const columns = [
     { title: "Inv Date", field: "purchase_date_time" },
@@ -119,27 +116,6 @@ const TableList = observer(() => {
     { title: "VAT", field: "total_vat_amount" },
     { title: "Inv Amt (Incl.VAT)", field: "total_amount" },
   ];
-
-
-    // work hold
-  // const handleDelete = async (row_id) => {
-  //   if (!user.can("delete", subject)) {
-  //     setOpenWarning(true);
-  //     return null;
-  //   }
-  //   const dlt = await axios.post(
-  //     `${baseUrl}/${endpoint.delete}`,
-  //     {
-  //       product_purchase_id: row_id,
-  //     },
-  //     {
-  //       headers: { Authorization: "Bearer " + user.auth_token },
-  //     }
-  //   );
-  //   handleRefress();
-  // };
-
-
 
   // handle create function
   const handleCreate = () => {
@@ -246,26 +222,28 @@ const TableList = observer(() => {
                 tableRef={tableRef}
                 data={(query) =>
                   new Promise((resolve, reject) => {
-                    let url = `${baseUrl}/${endpoint.list}?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`;
-                    }
+                    console.log(dummyData);
+                    const filteredData = dummyData.product_whole_purchase_list.filter(item => {
+                      if (query.search) {
+                        return (
+                          item.invoice_no.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.reference_no.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.supplier_name.toLowerCase().includes(query.search.toLowerCase())
+                        );
+                      }
+                      return true;
+                    });
 
-                    url += `&page=${query.page + 1}`;
-                    fetch(url, {
-                      method: "post",
-                      headers: { Authorization: "Bearer " + user.auth_token },
-                    })
-                      .then((resp) => resp.json())
-                      .then((resp) => {
-                        console.log(resp);
-                        resolve({
-                          data: resp.data,
-                          page: resp?.meta?.current_page - 1,
-                          totalCount: resp?.meta?.total,
-                        });
-                      });
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
                 actions={[

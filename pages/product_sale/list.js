@@ -118,8 +118,6 @@ const TableList = observer(() => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openWarning, setOpenWarning] = useState(false);
   const [openDetailModal, setOpenDetailModal] = useState(false);
-  // const [invoiceData, setInvoicedata, setInvoicedataPromise] =
-  //   useStatePromise(null);
   const [invoiceData, setInvoicedata] =useState(null);
   const [invoiceProduct, setInvoiceproduct] = useState(null);
   const [buniessDetails, setBusinessDetails] = useState(null);
@@ -135,8 +133,6 @@ const TableList = observer(() => {
      if(user?.details?.role === 'admin'){
      return setOpenWarning(true);
      }
-
-      
 
      if(!user?.details?.store_van_user?.assign_store_id){
       return setOpenWarning(true);
@@ -194,27 +190,7 @@ const TableList = observer(() => {
     { title: "Inv Amt (Excl.VAT)", field: "after_discount_amount" },
     { title: "VAT", field: "total_vat_amount" },
     { title: "Inv Amt (Incl.VAT)", field: "total_amount" },
-   
-    // {title: "Seller Name",field: "user_name"},
-   
   ];
-
-  // const handleDelete = async (row_id) => {
-  //   if (!user.can("delete", subject)) {
-  //     setOpenWarning(true);
-  //     return null;
-  //   }
-  //   const dlt = await axios.post(
-  //     `${baseUrl}/${endpoint.delete}`,
-  //     {
-  //       product_sale_id: row_id,
-  //     },
-  //     {
-  //       headers: { Authorization: "Bearer " + user.auth_token },
-  //     }
-  //   );
-  //   paginateProducts();
-  // };
 
   const componentRef = React.useRef(null);
   const handlePrint = async (row) => {

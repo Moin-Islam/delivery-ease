@@ -34,6 +34,8 @@ import tableIcons from "components/table_icon/icon";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import ShoppingBasketIcon from "@material-ui/icons/ShoppingBasket";
 import PurchaseHistory from "components/admin/party/purchaseHistory";
+import dummyData from '../../utils/dummyData'; // Import the dummy data
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -230,84 +232,30 @@ const TableList = observer(() => {
 
                 data={query =>
                   new Promise((resolve, reject) => {
-                   
-                    let url = `${baseUrl}/pos_sale_customer_list_pagination_with_search?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`
-                    }
-                  
-                    url += `&page=${query.page + 1}`
-                    fetch(url,{
-                          method: "post",
-                          headers: { Authorization: "Bearer " + user.auth_token },
-                        }
-                      ).then(resp => resp.json()).then(resp => {
-                      console.log(resp)
-                      resolve({
-                            data: resp.data,
-                            page: resp?.meta?.current_page - 1,
-                            totalCount: resp?.meta?.total,
-                      });
-                    })
-        
+                    const filteredData = dummyData.pos_sale_customer_list.filter(item => {
+                      if (query.search) {
+                        return (
+                          item.customer_code.includes(query.search) ||
+                          item.name.toLowerCase().includes(query.search.toLowerCase()) ||
+                          item.customer_store_name.toLowerCase().includes(query.search.toLowerCase())
+                        );
+                      }
+                      return true;
+                    });
+
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
 
-                actions={[
-                  {
-                    icon: () => (
-                      <Button
-                        fullWidth={true}
-                        variant="contained"
-                        color="primary"
-                      >
-                        <EditTwoToneIcon fontSize="small" color="white" />
-                      </Button>
-                    ),
-                    tooltip: "Edit POS Customer",
-                    onClick: (event, rowData) => handleEdit(rowData),
-                  },
-
-                  // {
-                  //   icon: () => (
-                  //     <Button
-                  //       fullWidth={true}
-                  //       variant="contained"
-                  //       color="primary"
-                  //     >
-                  //       <ShoppingBasketIcon fontSize="small" color="white" />
-                  //     </Button>
-                  //   ),
-                  //   tooltip: "Purchase History",
-                  //   onClick: (event, rowData) => handlePurchaseHistory(rowData),
-                  // },
-                  (rowData) => ({
-                    icon: () => (
-                      <Button
-                        fullWidth={true}
-                        variant="contained"
-                        color="secondary"
-                      >
-                        <DeleteForeverTwoToneIcon
-                          fontSize="small"
-                          color="white"
-                        />
-                      </Button>
-                    ),
-                    tooltip: "Delete Customer",
-                    onClick: (event, rowData) => (
-                      confirm("You want to delete " + rowData.name),
-                      handleDelete(rowData.id)
-                    ),
-                  }),
-                  {
-                    icon: RefreshIcon,
-                    tooltip: "Refresh Data",
-                    isFreeAction: true,
-                    onClick: () => handleRefress(),
-                  },
-                ]}
                 options={{
                   actionsColumnIndex: -1,
                   pageSize: 12,

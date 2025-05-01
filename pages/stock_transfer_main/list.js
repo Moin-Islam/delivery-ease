@@ -24,18 +24,17 @@ import { Box, Chip, Grid, CircularProgress } from "@material-ui/core";
 import { baseUrl } from "../../const/api";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-// import Edit from "../../components/admin/stock_transfer_invoice/edit";
 import Create from "components/admin/warehouse_stock_transfer/create";
 import Details from "../../components/admin/stock_transfer_invoice/details";
 import tableIcons from "components/table_icon/icon";
 import { useReactToPrint } from "react-to-print";
 import StockTransferInvoice from "components/admin/stock_transfer_invoice/stockTransferInvoice.js";
 import useStatePromise from "hooks/use-state-promise";
-// import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import PrintTwoToneIcon from "@material-ui/icons/PrintTwoTone";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 import ListAltTwoToneIcon from "@material-ui/icons/ListAltTwoTone";
-// import { TextField } from "@material-ui/core";
+import dummyData from "../../utils/dummyData"; // Import dummyData for stock_transfer_main_list
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -93,7 +92,6 @@ const TableList = observer(() => {
 
   const { user } = useRootStore();
   const [stockListType, setStockListType] = useState("main");
-  // const [stocks, setStocks] = useState(null);
   const [warehouseId, setWarehouseId] = useState(null);
 
   const [editData, setEditData] = useState(null);
@@ -168,37 +166,7 @@ const TableList = observer(() => {
     },
   ];
 
-  // const handleDelete = async (row_id) => {
-  //   if (!user.can("delete", subject)) {
-  //     setOpenWarning(true);
-  //     return null;
-  //   }
-  //   const dlt = await axios.post(
-  //     `${baseUrl}/${endpoint.delete}`,
-  //     {
-  //       product_sale_id: row_id,
-  //     },
-  //     {
-  //       headers: { Authorization: "Bearer " + user.auth_token },
-  //     }
-  //   );
-  //   handleRefress();
-  // };
-
-  // const handleEdit = (row) => {
-  //   if (!user.can("edit", subject)) {
-  //     setOpenWarning(true);
-  //     return null;
-  //   }
-  //   //console.log(row);
-  //   setEditData(row);
-  //   setOpenEditModal(true);
-  // };
   const handleCreate = () => {
-    // if (!user.can('create', subject)) {
-    //   setOpenWarning(true);
-    //   return null;
-    // }
     handleClickOpenCreate(true);
   };
   const handleDetail = (row) => {
@@ -227,18 +195,17 @@ const TableList = observer(() => {
         setInvoiceproduct(res.data.response.stock_transfer_details);
         setInvoicetype(type);
       });
-  
   };
   const handlePrintInvoice = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: invoiceData?.invoice_no
+    documentTitle: invoiceData?.invoice_no,
   });
 
-  useEffect(()=>{
-    if(invoiceData){
+  useEffect(() => {
+    if (invoiceData) {
       handlePrintInvoice();
     }
-    },[invoiceData])
+  }, [invoiceData]);
 
   const fetchWarehouseId = async () => {
     try {
@@ -298,7 +265,6 @@ const TableList = observer(() => {
             </CardHeader>
 
             <CardBody>
-              {/* {stockListType === "main" && ( */}
               <MaterialTable
                 icons={tableIcons}
                 title="List"
@@ -306,26 +272,47 @@ const TableList = observer(() => {
                 columns={columns}
                 data={(query) =>
                   new Promise((resolve, reject) => {
-                    let url = `${baseUrl}/${endpoint.list}?`;
-                    //searching
-                    if (query.search) {
-                      url += `search=${query.search}`;
-                    }
+                    const filteredData = dummyData.stock_transfer_main_list.filter(
+                      (item) => {
+                        if (query.search) {
+                          return (
+                            item.issue_date
+                              .toLowerCase()
+                              .includes(query.search.toLowerCase()) ||
+                            item.invoice_no
+                              .toLowerCase()
+                              .includes(query.search.toLowerCase()) ||
+                            item.user_name
+                              .toLowerCase()
+                              .includes(query.search.toLowerCase()) ||
+                            item.warehouse_name
+                              .toLowerCase()
+                              .includes(query.search.toLowerCase()) ||
+                            item.store_name
+                              .toLowerCase()
+                              .includes(query.search.toLowerCase()) ||
+                            item.sales_man_user_name
+                              .toLowerCase()
+                              .includes(query.search.toLowerCase()) ||
+                            item.van_name
+                              .toLowerCase()
+                              .includes(query.search.toLowerCase())
+                          );
+                        }
+                        return true;
+                      }
+                    );
 
-                    url += `&page=${query.page + 1}`;
-                    fetch(url, {
-                      method: "POST",
-                      headers: { Authorization: "Bearer " + user.auth_token },
-                    })
-                      .then((resp) => resp.json())
-                      .then((resp) => {
-                        console.log(resp);
-                        resolve({
-                          data: resp.data,
-                          page: resp?.meta?.current_page - 1,
-                          totalCount: resp?.meta?.total,
-                        });
-                      });
+                    const pageData = filteredData.slice(
+                      query.page * query.pageSize,
+                      (query.page + 1) * query.pageSize
+                    );
+
+                    resolve({
+                      data: pageData,
+                      page: query.page,
+                      totalCount: filteredData.length,
+                    });
                   })
                 }
                 actions={[
@@ -357,19 +344,6 @@ const TableList = observer(() => {
                     onClick: (event, rowData) =>
                       handlePrint(rowData, "invoice"),
                   },
-                  // {
-                  //   icon: () => (
-                  //     <Button
-                  //       fullWidth={true}
-                  //       variant="contained"
-                  //       color="primary"
-                  //     >
-                  //       <ReceiptIcon fontSize="small" color="white" />
-                  //     </Button>
-                  //   ),
-                  //   tooltip: "Chalan",
-                  //   onClick: (event, rowData) => handlePrint(rowData, "chalan"),
-                  // },
                   {
                     icon: RefreshIcon,
                     tooltip: "Refresh Data",
@@ -385,7 +359,6 @@ const TableList = observer(() => {
                   padding: "dense",
                 }}
               />
-              {/* )} */}
             </CardBody>
           </Card>
           <Dialog
@@ -418,36 +391,6 @@ const TableList = observer(() => {
             />
           </Dialog>
 
-          {/* <Dialog
-            open={openEditModal}
-            onClose={handleCloseEdit}
-            TransitionComponent={Transition}
-            fullWidth={true}
-            maxWidth="lg"
-          >
-            <AppBar style={{ position: "relative" }}>
-              <Toolbar>
-                <IconButton
-                  edge="start"
-                  color="inherit"
-                  onClick={handleCloseEdit}
-                  aria-label="close"
-                >
-                  <CloseIcon />
-                </IconButton>
-                <Typography variant="h6" style={{ flex: 1 }}>
-                  Edit {title}
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            <Edit
-              token={user.auth_token}
-              modal={setOpenEditModal}
-              editData={editData}
-              endpoint={endpoint.edit}
-              mutate={handleRefress}
-            />
-          </Dialog> */}
           <Dialog
             open={openDetailModal}
             onClose={handleCloseDetail}

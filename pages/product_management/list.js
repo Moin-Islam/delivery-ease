@@ -20,8 +20,6 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import Slide from "@material-ui/core/Slide";
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import { Box, Chip, Grid} from "@material-ui/core";
 import { baseUrl, webUrl } from "../../const/api";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
@@ -34,10 +32,11 @@ import tableIcons from "components/table_icon/icon";
 import EditTwoToneIcon from "@material-ui/icons/EditTwoTone";
 import DeleteForeverTwoToneIcon from "@material-ui/icons/DeleteForeverTwoTone";
 import { useReactToPrint } from "react-to-print";
-import exportFromJSON from 'export-from-json'  
 import Barcode from "components/admin/product/barcode.js";
 import useStatePromise from "hooks/use-state-promise";
 import PrintTwoToneIcon from "@material-ui/icons/PrintTwoTone";
+import dummyData from "../../utils/dummyData";
+
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -100,8 +99,6 @@ const TableList = observer(() => {
   const [barcodeProductName, setbarcodeproductname] = useState(null);
   const [barcodeProductPrice, setbarcodeproductprice] = useState(null);
   const [vatStatus, setVatStatus] = useState(null);
-  // const [anchorEl, setAnchorEl] = React.useState(null);
-  // const [exportData, setExportData] = useState([]);
   const handleRefress = () => {
     tableRef.current && tableRef.current.onQueryChange();
   };
@@ -141,16 +138,6 @@ const TableList = observer(() => {
         </Typography>
       ),
     },
-    {
-      title: "Name",
-      field: "product_name",
-      render: (rowData) => (
-        <Typography variant="subtitle2" style={{ width: "250px" }}>
-          {rowData.arabic_name}
-        </Typography>
-      ),
-    },
-
     { title: "Specification", field: "specification",
      render: (rowData) => (
       <Typography variant="subtitle2" style={{ width: "250px" }}>
@@ -165,8 +152,6 @@ const TableList = observer(() => {
     { title: "Purchase Price", field: "purchase_price" },
     { title: "Minimum Selling Price", field: "minimum_selling_price" },
     { title: "Selling Price", field: "selling_price" },
-    { title: "Unit", field: "unit_name" },
-
     {
       title: "Status",
       field: "status",
@@ -336,40 +321,51 @@ const TableList = observer(() => {
               </Grid>
             </CardHeader>
             <CardBody>
-
-                  <MaterialTable
+              <div style={{ overflowX: 'auto', width: '95%' }}>
+                <MaterialTable
                   icons={tableIcons}
                   title="List"
                   tableRef={tableRef}
-                  columns={columns}
-
-
+                  columns={columns.map(column => ({
+                    ...column,
+                    width: '30px',
+                    cellStyle: {
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      width: '30px',
+                      maxWidth: '30px',
+                    },
+                    headerStyle: {
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      width: '30px',
+                      maxWidth: '30px',
+                    },
+                  }))}
                   data={query =>
                     new Promise((resolve, reject) => {
-                     
-                      let url = `${baseUrl}/${endpoint.list}?`;
-                      //searching
-                      if (query.search) {
-                        url += `search=${query.search}`
-                      }
-                    
-                      url += `&page=${query.page + 1}`
-                      fetch(url,{
-                            method: "post",
-                            headers: { Authorization: "Bearer " + user.auth_token },
-                          }
-                        ).then(resp => resp.json()).then(resp => {
-                        console.log(resp)
-                      
-                        resolve({
-                              data: resp.data,
-                              page: resp?.meta?.current_page - 1,
-                              totalCount: resp?.meta?.total,
-                        });
-                      //   setExportData(resp.data);
-                      // console.log('hhhclick')
-                      })
-          
+                      const filteredData = dummyData.product_management_list.filter(item => {
+                        if (query.search) {
+                          return (
+                            item.product_name.toLowerCase().includes(query.search.toLowerCase()) ||
+                            item.item_code.toLowerCase().includes(query.search.toLowerCase())
+                          );
+                        }
+                        return true;
+                      });
+
+                      const pageData = filteredData.slice(
+                        query.page * query.pageSize,
+                        (query.page + 1) * query.pageSize
+                      );
+
+                      resolve({
+                        data: pageData,
+                        page: query.page,
+                        totalCount: filteredData.length,
+                      });
                     })
                   }
                   actions={[
@@ -424,23 +420,20 @@ const TableList = observer(() => {
                       isFreeAction: true,
                       onClick: () => handleRefress(),
                     },
-                   ]}
+                  ]}
                   options={{
                     actionsColumnIndex: -1,
                     pageSize: 12,
-                    pageSizeOptions:[12],
+                    pageSizeOptions: [12],
                     padding: "dense",
-                    // exportButton:true
+                    tableLayout: "fixed", // Enable fixed table layout
                   }}
-               
                 />
-
+              </div>
               </CardBody>
               </Card>
            </GridItem >
-        
         </GridContainer>
-
 
 <Dialog
         fullScreen

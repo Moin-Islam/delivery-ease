@@ -113,7 +113,6 @@ const BarcodeField = ({
         label="Search by barcode"
         name="barcode"
         value={barcode}
-        margin="dense"
         onChange={findByBarcode}
       />
     </div>

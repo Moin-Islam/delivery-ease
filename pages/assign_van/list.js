@@ -1,4 +1,4 @@
- import React from 'react';
+import React from 'react';
 import { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import RefreshIcon from "@material-ui/icons/Refresh";
@@ -27,7 +27,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import Create from '../../components/admin/assign_van/create';
 import tableIcons from 'components/table_icon/icon';
-
+import dummyData from '../../utils/dummyData'; // Import dummyData for assign_van_list
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -213,21 +213,7 @@ const TableList = observer(() => {
     },
   ];
 
-
-  // const handleEdit = (row) => {
-  //   // if (!user.can('edit', subject)) {
-  //   //   setOpenWarning(true);
-  //   //   return null;
-  //   // }
-  //   console.log(row);
-  //   setEditData(row);
-  //   setOpenEditModal(true);
-  // };
   const handleCreate = () => {
-    // if (!user.can('create', subject)) {
-    //   setOpenWarning(true);
-    //   return null;
-    // }
     handleClickOpenCreate(true);
   };
   return (
@@ -268,30 +254,31 @@ const TableList = observer(() => {
                   title="List"
                   tableRef={tableRef}
                   columns={columns}
-                  data={query =>
+                  data={(query) =>
                     new Promise((resolve, reject) => {
-                     
-                      let url = `${baseUrl}/${endpoint.list}?`;
-                      //searching
-                      if (query.search) {
-                        url += `search=${query.search}`
-                      }
-                    
-                      url += `&page=${query.page + 1}`
-                      fetch(url,{
-                            method: "POST",
-                            headers: { Authorization: "Bearer " + user.auth_token },
-                          }
-                        ).then(resp => resp.json()).then(resp => {
-           
-                          
-                        resolve({
-                              data: resp?.data,
-                              page:  resp?.meta?.current_page - 1,
-                              totalCount: resp?.meta?.total,
-                        });
-                      })
-          
+                      const filteredData = dummyData.assign_van_list.filter(item => {
+                        if (query.search) {
+                          return (
+                            item.start_date_time.toLowerCase().includes(query.search.toLowerCase()) ||
+                            item.end_date_time.toLowerCase().includes(query.search.toLowerCase()) ||
+                            item.warehouse_name.toLowerCase().includes(query.search.toLowerCase()) ||
+                            item.van_name.toLowerCase().includes(query.search.toLowerCase()) ||
+                            item.sales_man_user_name.toLowerCase().includes(query.search.toLowerCase())
+                          );
+                        }
+                        return true;
+                      });
+
+                      const pageData = filteredData.slice(
+                        query.page * query.pageSize,
+                        (query.page + 1) * query.pageSize
+                      );
+
+                      resolve({
+                        data: pageData,
+                        page: query.page,
+                        totalCount: filteredData.length,
+                      });
                     })
                   }
   
@@ -322,21 +309,6 @@ const TableList = observer(() => {
                       ),
                      
                     }),
-                    // handleEnd(rowData.id)
-                    // {
-                    //   icon: () => (
-                    //     <Button
-                    //       fullWidth={true}
-                    //       variant="contained"
-                    //       color="primary">
-                    //       <EditTwoToneIcon fontSize="small" color="white" />
-                    //     </Button>
-                    //   ),
-
-                    //   tooltip: 'Edit User',
-                    //   onClick: (event, rowData) => handleEdit(rowData),
-                    // },
-                
                     {
                       icon: RefreshIcon,
                       tooltip: "Refresh Data",

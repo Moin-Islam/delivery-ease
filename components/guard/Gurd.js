@@ -36,11 +36,9 @@ const Gurd = observer(({ children, subject }) => {
     setOpen(false);
   };
   const { user } = useRootStore();
-  //   React.useEffect(() => {
-  //     console.log(children);
-  //   }, []);
-  console.log(subject)
-console.log(user.has_list_permission(subject))
+  console.log(subject);
+  //console.log(subject)
+  //console.log(user.has_list_permission(subject))
   // console.log("gurd logstatus-" + user.isLoggedIn);
 
   if (user.isLoggedIn) {

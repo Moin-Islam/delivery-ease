@@ -28,10 +28,6 @@ export const RootStoreProvider = ({ children }) => {
       }
     }
 
-    // const saveSnapshot = debounce((snapshot) => {
-    //   console.log("Saving Snapshot to Storage");
-    //   localforage.setItem("rootStore", snapshot);
-    // }, 1500);
     const saveSnapshot = (snapshot) => {
       //console.log("Saving Snapshot to Storage");
       localforage.setItem("rootStore", snapshot);

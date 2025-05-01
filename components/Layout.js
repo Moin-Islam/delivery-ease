@@ -30,7 +30,6 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 
-
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -116,6 +115,7 @@ export const Layout = observer(({ children }) => {
   };
 
   const [openList, setOpenList] = React.useState(null);
+  console.log('openList', openList);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -124,36 +124,24 @@ export const Layout = observer(({ children }) => {
     setAnchorEl(null);
   };
 
-
   const handleClickList = (path, collapse) => {
-
-    if(collapse){
-      if(openList == path){
-        return setOpenList(null)
-       }else{
-         setOpenList(path);
-       }
-    }else{
-          setOpenList(path);
-          router.push(path);
+    if (collapse) {
+      if (openList == path) {
+        return setOpenList(null);
+      } else {
+        setOpenList(path);
+      }
+    } else {
+      setOpenList(path);
+      router.push(path);
     }
   };
-
-  // const handleClickList = (path, collapse) => {
-  //   if (collapse) {
-  //     setOpenList(path);
-  //   } else {
-  //     setOpenList(path);
-  //     router.push(path);
-  //   }
-  // };
 
   const logout = () => {
     user.logOut();
     console.log('logout');
     router.push('/login');
-    handleClose()
-
+    handleClose();
   };
 
   return (
@@ -179,15 +167,12 @@ export const Layout = observer(({ children }) => {
             <Typography variant="h6" noWrap style={{ flexGrow: 1 }}>
               Welcome Back {user.name} (Role: {user?.details?.role})
             </Typography>
-
-
-        
             <Avatar
-        sx={{ width: 24, height: 24 }}
-             alt="Remy Sharp" 
-             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReg_F1DaALJ6YrWo_QI0Uh3t7ZtXXCTwCMED__q3IoW9WcCrtsmOenkqBS54131SqIDmE&usqp=CAU" 
-             onClick={handleClick}
-             />
+              sx={{ width: 24, height: 24 }}
+              alt="Remy Sharp"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReg_F1DaALJ6YrWo_QI0Uh3t7ZtXXCTwCMED__q3IoW9WcCrtsmOenkqBS54131SqIDmE&usqp=CAU"
+              onClick={handleClick}
+            />
           </Toolbar>
         </AppBar>
       )}
@@ -206,12 +191,7 @@ export const Layout = observer(({ children }) => {
             }),
           }}>
           <div className={classes.toolbar}>
-
-          <Typography variant="h6" >
-          DeliverEase
-            </Typography>
-      
-          
+            <Typography variant="h6">DeliverEase</Typography>
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'rtl' ? (
                 <ChevronRightIcon color="primary" />
@@ -224,33 +204,24 @@ export const Layout = observer(({ children }) => {
           <List>
             {admin_routes.map((route, index) => (
               <>
-             
                 <ListItem
                   button
                   onClick={() => handleClickList(route.path, route.collapse)}
                   className={
                     router.pathname == route.path ? classes.activeRoute : ''
-                  }
-     
-                >
-                    
+                  }>
                   <Tooltip title={route.name} placement="right">
                     <ListItemIcon>
                       <route.icon color="primary" />
                     </ListItemIcon>
                   </Tooltip>
-
-
                   <ListItemText primary={route.name} disableTypography={true} />
-           
                   {route.collapse && (
                     <Box>
                       {openList == route.path ? <ExpandLess /> : <ExpandMore />}
                     </Box>
                   )}
                 </ListItem>
-               
-
                 {route.collapse && (
                   <Collapse
                     in={openList == route.path ? true : false}
@@ -265,7 +236,6 @@ export const Layout = observer(({ children }) => {
                           <a>
                             <ListItem
                               button
-                              className={classes.nested}
                               className={
                                 router.pathname == child.path + child.childPath
                                   ? classes.activeRoute
@@ -291,7 +261,9 @@ export const Layout = observer(({ children }) => {
             ))}
           </List>
         </Drawer>
-      ) : <span></span>}
+      ) : (
+        <span></span>
+      )}
 
       <main className={classes.content}>
         <div className={classes.toolbar} />
@@ -303,18 +275,19 @@ export const Layout = observer(({ children }) => {
         </motion.div>
       </main>
 
-
       <Menu
         id="simple-menu"
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-       <MenuItem onClick={()=>{
-         handleClose()
-         router.push('/business_setting/list')
-         } } >Setting</MenuItem>
+        onClose={handleClose}>
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            router.push('/business_setting/list');
+          }}>
+          Setting
+        </MenuItem>
         <MenuItem onClick={logout}>Logout</MenuItem>
       </Menu>
     </div>
