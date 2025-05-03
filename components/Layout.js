@@ -210,12 +210,12 @@ export const Layout = observer(({ children }) => {
             }),
           }}>
           <div className={classes.toolbar}>
-          {/* <img
-            src="/img/logo_1.png" // Replace with the actual path to your icon
+          <img
+            src="/img/logo_14.png" // Replace with the actual path to your icon
             alt="DeliverEase Icon"
-            style={{ width: 40, height: 40 }} // Adjust size as needed
-          /> */}
-            <Typography variant="h6">DeliverEase</Typography>
+            style={{ width: 120, height: 60 }} // Adjust size as needed
+          />
+            {/* <Typography variant="h6">DeliverEase</Typography> */}
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'rtl' ? (
                 <ChevronRightIcon color="primary" />
