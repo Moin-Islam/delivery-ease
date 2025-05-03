@@ -92,15 +92,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
   },
   activeRoute: {
-    backgroundColor: "#2C3532",
-    color: '#fff',
+    backgroundColor: "#D2E8E3",
+    color: '#2C3532',
     '&:hover': {
-      backgroundColor: '#2C3532',
-      color: '#fff',
+      backgroundColor: '#D2E8E3',
+      color: '#2C3532',
     },
     borderTopRightRadius: 25,
     borderBottomRightRadius: 25,
     fontWeight: 'bold',
+    '& .MuiListItemIcon-root': {
+      color: '#fff', // Set icon color to white
+    },
   },
   listItemHover: {
     '&:hover': {
@@ -230,7 +233,7 @@ export const Layout = observer(({ children }) => {
                   onClick={() => handleClickList(route.path, route.collapse)}
                   className={clsx({
                     [classes.activeRoute]: router.pathname == route.path,
-                    [classes.listItemHover]: true, // Apply hover effect to all buttons
+                    [classes.listItemHover]: false, // Apply hover effect to all buttons
                   })}>
                   <Tooltip title={route.name} placement="right">
                     <ListItemIcon>
