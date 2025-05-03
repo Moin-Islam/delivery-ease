@@ -92,10 +92,26 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
   },
   activeRoute: {
-    backgroundColor: '#69aafd',
+    backgroundColor: "#2C3532",
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#2C3532',
+      color: '#fff',
+    },
     borderTopRightRadius: 25,
     borderBottomRightRadius: 25,
     fontWeight: 'bold',
+  },
+  listItemHover: {
+    '&:hover': {
+      backgroundColor: '#2C3532', // Apply hover color
+      color: '#fff', // Make text white
+      '& .MuiListItemIcon-root': {
+        color: '#fff', // Make icon white
+      },
+    },
+    borderTopRightRadius: 25,
+    borderBottomRightRadius: 25,
   },
 }));
 
@@ -191,6 +207,11 @@ export const Layout = observer(({ children }) => {
             }),
           }}>
           <div className={classes.toolbar}>
+          {/* <img
+            src="/img/logo_1.png" // Replace with the actual path to your icon
+            alt="DeliverEase Icon"
+            style={{ width: 40, height: 40 }} // Adjust size as needed
+          /> */}
             <Typography variant="h6">DeliverEase</Typography>
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'rtl' ? (
@@ -207,9 +228,10 @@ export const Layout = observer(({ children }) => {
                 <ListItem
                   button
                   onClick={() => handleClickList(route.path, route.collapse)}
-                  className={
-                    router.pathname == route.path ? classes.activeRoute : ''
-                  }>
+                  className={clsx({
+                    [classes.activeRoute]: router.pathname == route.path,
+                    [classes.listItemHover]: true, // Apply hover effect to all buttons
+                  })}>
                   <Tooltip title={route.name} placement="right">
                     <ListItemIcon>
                       <route.icon color="primary" />

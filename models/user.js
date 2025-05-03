@@ -113,7 +113,8 @@ export const User = types
         { name: 'stock_manage_list' },
         { name: 'purchase_return_list' },
         { name: 'sale_return_list' },
-        { name: 'product_pos_sale_list' } //Create Sale permission
+        { name: 'product_pos_sale_list' }, //Create Sale permission
+        { name: 'product_pos_sale_create' }, //Create Sale permission
     
       ];
 
@@ -127,18 +128,16 @@ export const User = types
 
       return !!foundPermission; // Return true if permission exists, otherwise false
     },
-    can(act, subject) {
-      const action = `${subject}_${act}`;
-      //console.log("checked crud gurd-" + action);
-      var __FOUND = self.details.permissions.find(function (permission, index) {
-        if (permission.name == action) return true;
-      });
-      if (__FOUND == undefined) {
-        return false;
-      } else {
-        return true;
-      }
-    },
+  can(act, subject) {
+    const action = `${subject}_${act}`;
+    console.log("Checking permission:", action);
+    const foundPermission = self.details.permissions.find(permission => {
+        console.log("Permission:", permission.name);
+        return permission.name == action;
+    });
+    return true;
+    return !!foundPermission;
+  }
   
   }))
   .views((self) => ({

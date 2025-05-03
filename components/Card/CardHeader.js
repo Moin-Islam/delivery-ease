@@ -15,6 +15,7 @@ const useStyles = makeStyles(styles);
 export default function CardHeader(props) {
   const classes = useStyles();
   const { className, children, color, plain, stats, icon, ...rest } = props;
+  console.log(color)
   const cardHeaderClasses = classNames({
     [classes.cardHeader]: true,
     [classes[color + "CardHeader"]]: color,

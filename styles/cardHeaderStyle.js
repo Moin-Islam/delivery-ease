@@ -7,6 +7,7 @@ import {
   roseCardHeader,
   darkCardHeader,
   whiteColor,
+  blackColor,
 } from "../styles/nextjs-material-dashboard.js";
 
 const cardHeaderStyle = {
@@ -109,7 +110,7 @@ const cardHeaderStyle = {
     },
   },
   primaryCardHeader: {
-    color: whiteColor,
+    color: blackColor,
     "&:not($cardHeaderIcon)": {
       ...primaryCardHeader,
     },

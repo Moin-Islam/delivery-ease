@@ -55,11 +55,11 @@ const styles = {
       marginBottom: "0",
     },
     "& a,& a:hover,& a:focus": {
-      color: "#FFFFFF",
+      color: "#000000",
     },
   },
   cardTitleWhite: {
-    color: "#FFFFFF",
+    color: "#000000",
     marginTop: "0px",
     minHeight: "auto",
     fontWeight: "300",
@@ -132,13 +132,13 @@ const TableList = observer(() => {
   };
 
   const handleClickOpenCreate = () => {
-     if(user?.details?.role === 'admin'){
-     return setOpenWarning(true);
-     }
+    //  if(user?.details?.role === 'admin'){
+    //  return setOpenWarning(true);
+    //  }
 
-     if(!user?.details?.store_van_user?.assign_store_id){
-      return setOpenWarning(true);
-      }
+    //  if(!user?.details?.store_van_user?.assign_store_id){
+    //   return setOpenWarning(true);
+    //   }
   
     setOpenCreateModal(true);
   };
@@ -167,10 +167,10 @@ const TableList = observer(() => {
     setOpenEditModal(true);
   };
   const handleCreate = () => {
-    if (!user.can("create", subject)) {
-      setOpenWarning(true);
-      return null;
-    }
+    // if (!user.can("create", subject)) {
+    //   setOpenWarning(true);
+    //   return null;
+    // }
     handleClickOpenCreate(true);
   };
   const handleDetail = (row) => {

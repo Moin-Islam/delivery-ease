@@ -135,6 +135,7 @@ const Login = observer(() => {
                   { id: 14, name: 'stock_manage_list', guard_name: 'web', created_at: '2025-05-01T00:00:00Z', updated_at: '2025-05-01T00:00:00Z', permission_id: 112, role_id: 1 },
                   { id: 15, name: 'purchase_return_list', guard_name: 'web', created_at: '2025-05-01T00:00:00Z', updated_at: '2025-05-01T00:00:00Z', permission_id: 113, role_id: 1 },
                   { id: 16, name: 'sale_return_list', guard_name: 'web', created_at: '2025-05-01T00:00:00Z', updated_at: '2025-05-01T00:00:00Z', permission_id: 114, role_id: 1 },
+                  { id: 67, name: 'product_pos_sale_create', guard_name: 'web', created_at: '2025-05-01T00:00:00Z', updated_at: '2025-05-01T00:00:00Z', permission_id: 228, role_id: 1 },
                   { id: 57, name: 'product_pos_sale_list', guard_name: 'web', created_at: '2025-05-01T00:00:00Z', updated_at: '2025-05-01T00:00:00Z', permission_id: 119, role_id: 1 },
                 ],
                 store_van_user: null,

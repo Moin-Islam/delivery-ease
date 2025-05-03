@@ -46,11 +46,11 @@ const styles = {
       marginBottom: '0',
     },
     '& a,& a:hover,& a:focus': {
-      color: '#FFFFFF',
+      color: "#000000",
     },
   },
   cardTitleWhite: {
-    color: '#FFFFFF',
+    color: "#000000",
     marginTop: '0px',
     minHeight: 'auto',
     fontWeight: '300',
