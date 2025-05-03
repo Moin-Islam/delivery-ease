@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     // display: "flex",
     background:
-      'linear-gradient(0deg, rgba(0,46,121,1) 0%, rgba(22,77,167,1) 27%, rgba(86,150,255,1) 100%)',
+      '#2C3532',
   },
   details: {
     display: 'flex',
@@ -153,7 +153,7 @@ const Dashboard = observer(() => {
                         ) : load ? (
                           <Button
                             variant="text"
-                            style={{ color: 'rgb(255, 169, 4)' }}
+                            style={{ color: '#fff' }}
                             size="medium"
                             className={classes.button}
                             endIcon={<ArrowRightAltRoundedIcon />}>
@@ -166,7 +166,7 @@ const Dashboard = observer(() => {
                       <Typography
                         variant="subtitle1"
                         color="textSecondary"
-                        style={{ color: 'rgb(255, 169, 4)' }}>
+                        style={{ color: '#fff' }}>
                         Today Purchase
                       </Typography>
                     </CardContent>
@@ -180,7 +180,7 @@ const Dashboard = observer(() => {
                     justify="flex-start"
                     alignItems="center">
                     <ShoppingCartRoundedIcon
-                      style={{ color: 'rgb(255, 169, 4)', fontSize: 65 }}
+                      style={{ color: '#fff', fontSize: 65 }}
                     />
                   </Grid>
                 </Grid>
@@ -205,7 +205,7 @@ const Dashboard = observer(() => {
                         ) : load ? (
                           <Button
                             variant="text"
-                            style={{ color: 'rgb(255, 169, 4)' }}
+                            style={{ color: '#fff' }}
                             size="medium"
                             className={classes.button}
                             endIcon={<ArrowRightAltRoundedIcon />}>
@@ -218,7 +218,7 @@ const Dashboard = observer(() => {
                       <Typography
                         variant="subtitle1"
                         color="textSecondary"
-                        style={{ color: 'rgb(255, 169, 4)' }}>
+                        style={{ color: '#fff' }}>
                         Today Sale
                       </Typography>
                     </CardContent>
@@ -232,7 +232,7 @@ const Dashboard = observer(() => {
                     justify="flex-start"
                     alignItems="center">
                     <AddShoppingCartRoundedIcon
-                      style={{ color: 'rgb(255, 169, 4)', fontSize: 65 }}
+                      style={{ color: '#fff', fontSize: 65 }}
                     />
                   </Grid>
                 </Grid>
@@ -261,7 +261,7 @@ const Dashboard = observer(() => {
                       ) : load ? (
                         <Button
                           variant="text"
-                          style={{ color: 'rgb(255, 169, 4)' }}
+                          style={{ color: '#fff' }}
                           size="medium"
                           className={classes.button}
                           endIcon={<ArrowRightAltRoundedIcon />}>
@@ -274,7 +274,7 @@ const Dashboard = observer(() => {
                     <Typography
                       variant="subtitle1"
                       color="textSecondary"
-                      style={{ color: 'rgb(255, 169, 4)' }}>
+                      style={{ color: '#fff' }}>
                       Total Purchase
                     </Typography>
                   </CardContent>
@@ -288,7 +288,7 @@ const Dashboard = observer(() => {
                   justify="flex-start"
                   alignItems="center">
                   <ShoppingCartRoundedIcon
-                    style={{ color: 'rgb(255, 169, 4)', fontSize: 65 }}
+                    style={{ color: '#fff', fontSize: 65 }}
                   />
                 </Grid>
               </Grid>
@@ -308,7 +308,7 @@ const Dashboard = observer(() => {
                       ) : load ? (
                         <Button
                           variant="text"
-                          style={{ color: 'rgb(255, 169, 4)' }}
+                          style={{ color: '#fff' }}
                           size="medium"
                           className={classes.button}
                           endIcon={<ArrowRightAltRoundedIcon />}>
@@ -321,7 +321,7 @@ const Dashboard = observer(() => {
                     <Typography
                       variant="subtitle1"
                       color="textSecondary"
-                      style={{ color: 'rgb(255, 169, 4)' }}>
+                      style={{ color: '#fff' }}>
                       Total Sale
                     </Typography>
                   </CardContent>
@@ -335,7 +335,7 @@ const Dashboard = observer(() => {
                   justify="flex-start"
                   alignItems="center">
                   <AddShoppingCartRoundedIcon
-                    style={{ color: 'rgb(255, 169, 4)', fontSize: 65 }}
+                    style={{ color: '#fff', fontSize: 65 }}
                   />
                 </Grid>
               </Grid>
